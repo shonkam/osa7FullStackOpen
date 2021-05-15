@@ -3,6 +3,7 @@ import {
   BrowserRouter as Router,
   Switch, Route, Link, useParams, useHistory
 } from "react-router-dom"
+import { useField } from './hooks'
 
 const Menu = ({ anecdotes, addNew }) => {
   const padding = {
@@ -80,40 +81,51 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
 
+  //const {reset, addNew, ...rest } = props
   const history = useHistory()
+  const content = useField('content')
+  const author = useField('author')
+  const info = useField('info')
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    console.log(content)
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     history.push('/')
   }
 
+  const resetValues = (e) => {
+    e.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content} />
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button onClick={handleSubmit}>create</button>
+        <button onClick={resetValues}>reset</button>
       </form>
     </div>
   )
@@ -144,9 +156,8 @@ const App = () => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
     setNotification(anecdote.content)
-    console.log(notification)
     setTimeout(() => {
-      setNotification(null)
+      setNotification('')
     }, 10000)
   }
 
@@ -173,7 +184,7 @@ const App = () => {
 
     <div>
       <h1>Software anecdotes</h1>
-      {notification !== null &&
+      {notification !== '' &&
         <h2>
           Added anecdote : {notification}
         </h2>}
