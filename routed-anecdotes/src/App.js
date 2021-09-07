@@ -6,6 +6,7 @@ import {
 import { useField } from './hooks'
 
 const Menu = ({ anecdotes, addNew }) => {
+  
   const padding = {
     paddingRight: 5
   }
@@ -82,7 +83,10 @@ const Footer = () => (
 
 const CreateNew = (props) => {
 
-  //const {reset, addNew, ...rest } = props
+  console.log(props)
+  const { reset, ...rest } = props
+  //const divProps = Object.assign({}, props)
+  //delete divProps.reset
   const history = useHistory()
   const content = useField('content')
   const author = useField('author')
@@ -102,27 +106,42 @@ const CreateNew = (props) => {
   }
 
   const resetValues = (e) => {
-    e.preventDefault()
+    console.log(content)
+    //e.preventDefault()
     content.reset()
     author.reset()
     info.reset()
   }
 
+  const contentTemp = {
+    content: content.value,
+    onChange: content.onChange
+  }
+
+  const authorTemp = {
+    author: author.value,
+    onChange: author.onChange
+  }
+
+  const infoTemp = {
+    info: info.value,
+    onChange: info.onChange
+  }
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form>
         <div>
           content
-          <input {...content} />
+          <input {...contentTemp} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...authorTemp} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...infoTemp} />
         </div>
         <button onClick={handleSubmit}>create</button>
         <button onClick={resetValues}>reset</button>
