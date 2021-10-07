@@ -7,20 +7,23 @@ import CreateBlog from './components/CreateBlog'
 import Togglable from './components/Togglable'
 import './App.css'
 import { notification } from './reducers/notificationReducer'
-import { connect } from 'react-redux'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { connect, useDispatch, useSelector } from 'react-redux'
+
+
 
 const App = (props) => {
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(state => state.blog)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const dispatch = useDispatch()
+
   useEffect(() => {
-    blogService
-      .getAll().then(initialBlogs => {
-        setBlogs(initialBlogs)
-      })
-  }, [])
+
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -78,7 +81,7 @@ const App = (props) => {
         let deletedBlogId = blog.id
         blogService.remove(blog.id, `bearer ${user.token}`)
 
-        setBlogs(blogs.filter(blog => blog.id !== deletedBlogId ? blog : null))
+        //setBlogs(blogs.filter(blog => blog.id !== deletedBlogId ? blog : null))
         props.notification(`Removed blog ${blog.title} by ${blog.author}`, 5)
       }
     } catch (exception) {
@@ -89,12 +92,8 @@ const App = (props) => {
   const addNewBlog = (blogObject) => {
 
     blogFormRef.current.toggleVisibility()
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        props.notification(`a new blog "${blogObject.title}" by ${blogObject.author} added`, 5)
-      })
+    props.createBlog(blogObject)
+    props.notification(`a new blog "${blogObject.title}" by ${blogObject.author} added`, 5)
   }
 
   const loginForm = () => (
@@ -125,6 +124,8 @@ const App = (props) => {
   )
 
   const blogForm = () => {
+    console.log('blogform')
+    console.log(blogs)
     let sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
 
     return (
@@ -162,7 +163,8 @@ const App = (props) => {
 }
 
 const mapDispatchToProps = {
-  notification
+  notification,
+  createBlog
 }
 
 const ConnectedApp = connect(null, mapDispatchToProps)(App)
