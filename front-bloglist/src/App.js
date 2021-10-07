@@ -6,6 +6,7 @@ import Notification from './components/Notification'
 import CreateBlog from './components/CreateBlog'
 import Togglable from './components/Togglable'
 import './App.css'
+import { setUser, login } from './reducers/userReducer'
 import { notification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { connect, useDispatch, useSelector } from 'react-redux'
@@ -14,9 +15,10 @@ import { connect, useDispatch, useSelector } from 'react-redux'
 
 const App = (store) => {
   const blogs = useSelector(state => state.blog)
+  const user = useSelector(state => state.user)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+
 
   const dispatch = useDispatch()
 
@@ -28,7 +30,7 @@ const App = (store) => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      store.setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
@@ -39,7 +41,7 @@ const App = (store) => {
   const handleLogout = async (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogAppUser')
-    setUser(null)
+    store.setUser(null)
   }
 
   const handleLogin = async (event) => {
@@ -53,7 +55,7 @@ const App = (store) => {
         'loggedBlogAppUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
-      setUser(user)
+      store.setUser(user)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -156,7 +158,8 @@ const App = (store) => {
 const mapStateTostore = (state) => {
   return {
     blogs: state.blogs,
-    notification: state.notification
+    notification: state.notification,
+    user: state.user
   }
 }
 
@@ -164,7 +167,9 @@ const mapDispatchTostore = {
   notification,
   createBlog,
   likeBlog,
-  deleteBlog
+  deleteBlog,
+  setUser,
+  login
 }
 
 const ConnectedApp = connect(mapStateTostore, mapDispatchTostore)(App)
