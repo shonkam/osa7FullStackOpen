@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
 import CreateBlog from './components/CreateBlog'
 import Togglable from './components/Togglable'
@@ -10,12 +8,19 @@ import { setUser, login } from './reducers/userReducer'
 import { notification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { connect, useDispatch, useSelector } from 'react-redux'
-
-
+import blogServices from './services/blogs'
 
 const App = (store) => {
   const blogs = useSelector(state => state.blog)
   const user = useSelector(state => state.user)
+  
+  if (user) {
+    window.localStorage.setItem('user-username', JSON.stringify(user.username))
+    window.localStorage.setItem('user-name', JSON.stringify(user.name))
+    window.localStorage.setItem('user-token', user.token)
+    blogServices.setToken(user.token)
+  }
+  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -27,11 +32,17 @@ const App = (store) => {
   }, [dispatch])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+    const username = window.localStorage.getItem('user-username')
+    const name = window.localStorage.getItem('user-name')
+    const token = window.localStorage.getItem('user-token')
+
+    if (username && name && token) {
+      const user = {
+        username: JSON.parse(username),
+        name: JSON.parse(name),
+        token: token
+      }
       store.setUser(user)
-      blogService.setToken(user.token)
     }
   }, [])
 
@@ -40,7 +51,9 @@ const App = (store) => {
 
   const handleLogout = async (event) => {
     event.preventDefault()
-    window.localStorage.removeItem('loggedBlogAppUser')
+    window.localStorage.removeItem('user-username')
+    window.localStorage.removeItem('user-name')
+    window.localStorage.removeItem('user-token')
     store.setUser(null)
   }
 
@@ -48,17 +61,12 @@ const App = (store) => {
     event.preventDefault()
     console.log('logging in with', username, password)
     try {
-      const user = await loginService.login({
-        username, password,
-      })
-      window.localStorage.setItem(
-        'loggedBlogAppUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
-      store.setUser(user)
+      await store.login({ username, password })
       setUsername('')
       setPassword('')
+
     } catch (exception) {
+      console.log(exception)
       store.notification('wrong credentials', 5)
     }
   }
@@ -155,7 +163,7 @@ const App = (store) => {
   )
 }
 
-const mapStateTostore = (state) => {
+const mapStateToStore = (state) => {
   return {
     blogs: state.blogs,
     notification: state.notification,
@@ -172,5 +180,5 @@ const mapDispatchTostore = {
   login
 }
 
-const ConnectedApp = connect(mapStateTostore, mapDispatchTostore)(App)
+const ConnectedApp = connect(mapStateToStore, mapDispatchTostore)(App)
 export default ConnectedApp
