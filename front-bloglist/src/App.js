@@ -5,6 +5,7 @@ import {
 } from "react-router-dom"
 import Blogs from './components/Blogs'
 import Login from './components/Login'
+import Users from './components/Users'
 import Notification from './components/Notification'
 
 import './App.css'
@@ -15,7 +16,7 @@ import blogServices from './services/blogs'
 
 const App = () => {
   const user = useSelector(state => state.user)
-  
+
   if (user) {
     window.localStorage.setItem('user-username', JSON.stringify(user.username))
     window.localStorage.setItem('user-name', JSON.stringify(user.name))
@@ -43,17 +44,51 @@ const App = () => {
       dispatch(setUser(user))
     }
   }, [dispatch])
-  
-  return (
-    <div>
-      <h1>Blog app</h1>
-      <Notification />
 
-      {user === null ?
-        < Login /> :
-        < Blogs />
-      }
-    </div>
+  const handleLogout = async (event) => {
+    event.preventDefault()
+    window.localStorage.removeItem('user-username')
+    window.localStorage.removeItem('user-name')
+    window.localStorage.removeItem('user-token')
+    dispatch(setUser(null))
+  }
+
+  const padding = {
+    padding: 5
+  }
+  if (user === null) {
+
+    return (
+      <div>
+        <h1>Blog app</h1>
+        <Notification />
+        < Login />
+      </div>
+
+    )
+  }
+  return (
+    <Router>
+      <h4>
+        <Link style={padding} to="/">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button>
+        
+      </h4>
+      <div>
+        <h1>Blog app</h1>
+      </div>
+      <Notification />
+      <Switch>
+        <Route path='/users'>
+          < Users />
+        </Route>
+        <Route path='/'>
+          < Blogs />
+        </Route>
+      </Switch>
+    </Router>
   )
 }
 

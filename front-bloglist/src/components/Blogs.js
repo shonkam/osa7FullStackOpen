@@ -14,14 +14,6 @@ const Blogs = () => {
   const dispatch = useDispatch()
   const blogFormRef = useRef()
 
-  const handleLogout = async (event) => {
-    event.preventDefault()
-    window.localStorage.removeItem('user-username')
-    window.localStorage.removeItem('user-name')
-    window.localStorage.removeItem('user-token')
-    dispatch(setUser(null))
-  }
-
   const updateLikes = (blog) => {
     try {
       dispatch(likeBlog(blog))
@@ -54,13 +46,6 @@ const Blogs = () => {
 
   return (
     <div>
-      <form onSubmit={handleLogout}>
-        <h2>Logged in as {user.name}
-          <button type='submit'>
-            logout
-          </button>
-        </h2>
-      </form>
       <Togglable buttonLabel='createNewBlog' ref={blogFormRef} id="newBlog">
         <CreateBlog
           newBlog={addNewBlog}
