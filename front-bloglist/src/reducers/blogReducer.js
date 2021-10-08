@@ -32,7 +32,7 @@ export const likeBlog = blog => {
     }
 }
 
-export const deleteBlog = id => {
+export const removeBlog = id => {
     return async dispatch => {
         await blogService.remove(id)
         dispatch({

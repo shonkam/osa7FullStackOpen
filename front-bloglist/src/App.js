@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
+import {
+  BrowserRouter as Router,
+  Switch, Route, Link
+} from "react-router-dom"
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import CreateBlog from './components/CreateBlog'
@@ -6,11 +10,11 @@ import Togglable from './components/Togglable'
 import './App.css'
 import { setUser, login } from './reducers/userReducer'
 import { notification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
-import { connect, useDispatch, useSelector } from 'react-redux'
+import { initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogReducer'
+import { useDispatch, useSelector } from 'react-redux'
 import blogServices from './services/blogs'
 
-const App = (store) => {
+const App = () => {
   const blogs = useSelector(state => state.blog)
   const user = useSelector(state => state.user)
   
@@ -42,9 +46,9 @@ const App = (store) => {
         name: JSON.parse(name),
         token: token
       }
-      store.setUser(user)
+      dispatch(setUser(user))
     }
-  }, [])
+  }, [dispatch])
 
   const blogFormRef = useRef()
 
@@ -54,29 +58,29 @@ const App = (store) => {
     window.localStorage.removeItem('user-username')
     window.localStorage.removeItem('user-name')
     window.localStorage.removeItem('user-token')
-    store.setUser(null)
+    dispatch(setUser(null))
   }
 
   const handleLogin = async (event) => {
     event.preventDefault()
     console.log('logging in with', username, password)
     try {
-      await store.login({ username, password })
+      await dispatch(login({ username, password }))
       setUsername('')
       setPassword('')
 
     } catch (exception) {
       console.log(exception)
-      store.notification('wrong credentials', 5)
+      dispatch(notification('wrong credentials', 5))
     }
   }
 
   const updateLikes = (blog) => {
     try {
-      store.likeBlog(blog)
-      store.notification(`updated likes of blog ${blog.title} by ${blog.author}`, 5)
+      dispatch(likeBlog(blog))
+      dispatch(notification(`updated likes of blog ${blog.title} by ${blog.author}`, 5))
     } catch (exception) {
-      store.notification('something went wrong, please refresh the page')
+      dispatch(notification('something went wrong, please refresh the page'))
       console.log(exception)
     }
   }
@@ -84,19 +88,19 @@ const App = (store) => {
   const deleteBlog = async (blog) => {
     try {
       if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-        await store.deleteBlog(blog.id)
-        await store.notification(`Removed blog ${blog.title} by ${blog.author}`, 5)
+        await dispatch(removeBlog(blog.id))
+        await dispatch(notification(`Removed blog ${blog.title} by ${blog.author}`, 5))
       }
     } catch (exception) {
-      await store.notification('something went wrong, please refresh the page')
+      await dispatch(notification('something went wrong, please refresh the page'))
     }
   }
 
   const addNewBlog = (blogObject) => {
 
     blogFormRef.current.toggleVisibility()
-    store.createBlog(blogObject)
-    store.notification(`a new blog "${blogObject.title}" by ${blogObject.author} added`, 5)
+    dispatch(createBlog(blogObject))
+    dispatch(notification(`a new blog "${blogObject.title}" by ${blogObject.author} added`, 5))
   }
 
   const loginForm = () => (
@@ -163,22 +167,4 @@ const App = (store) => {
   )
 }
 
-const mapStateToStore = (state) => {
-  return {
-    blogs: state.blogs,
-    notification: state.notification,
-    user: state.user
-  }
-}
-
-const mapDispatchTostore = {
-  notification,
-  createBlog,
-  likeBlog,
-  deleteBlog,
-  setUser,
-  login
-}
-
-const ConnectedApp = connect(mapStateToStore, mapDispatchTostore)(App)
-export default ConnectedApp
+export default App
