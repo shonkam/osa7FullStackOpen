@@ -14,10 +14,12 @@ import { initializeBlogs } from './reducers/blogReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import blogServices from './services/blogs'
 import { getAllUsers } from './reducers/usersReducer'
+import User from './components/User'
 
 const App = () => {
   const user = useSelector(state => state.user)
-
+  const users = useSelector(state => state.users)
+  
   if (user) {
     window.localStorage.setItem('user-username', JSON.stringify(user.username))
     window.localStorage.setItem('user-name', JSON.stringify(user.name))
@@ -76,13 +78,16 @@ const App = () => {
         <Link style={padding} to="/users">users</Link>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
-        
+
       </h4>
       <div>
         <h1>Blog app</h1>
       </div>
       <Notification />
       <Switch>
+        <Route path='/users/:id'>
+          <User users={users} />
+        </Route>
         <Route path='/users'>
           < Users />
         </Route>
