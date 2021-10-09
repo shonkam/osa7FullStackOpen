@@ -13,6 +13,7 @@ import { setUser } from './reducers/userReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import blogServices from './services/blogs'
+import { getAllUsers } from './reducers/usersReducer'
 
 const App = () => {
   const user = useSelector(state => state.user)
@@ -28,6 +29,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(getAllUsers())
   }, [dispatch])
 
   useEffect(() => {

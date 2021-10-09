@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import { notification } from '../reducers/notificationReducer'
 import { createBlog, likeBlog, removeBlog } from '../reducers/blogReducer'
-import { setUser } from '../reducers/userReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './Blog'
 import CreateBlog from './CreateBlog'
@@ -46,6 +45,7 @@ const Blogs = () => {
 
   return (
     <div>
+      <h2>Blogs</h2>
       <Togglable buttonLabel='createNewBlog' ref={blogFormRef} id="newBlog">
         <CreateBlog
           newBlog={addNewBlog}

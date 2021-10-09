@@ -14,7 +14,6 @@ const userReducer = (state = null, action) => {
 }
 
 export const login = credentials => {
-    console.log(credentials)
     return async dispatch => {
         const response = await loginService.login(credentials)
         console.log(response)

@@ -7,19 +7,21 @@ const Login = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+
   const dispatch = useDispatch()
 
   const handleLogin = (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
+
     try {
       dispatch(login({ username, password }))
       setUsername('')
       setPassword('')
 
     } catch (exception) {
-      console.log(exception)
       dispatch(notification('wrong credentials', 5))
+      console.log(exception)
     }
   }
 

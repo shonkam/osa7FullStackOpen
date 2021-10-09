@@ -8,6 +8,11 @@ const login = async credentials => {
   return response.data
 }
 
-const loginService = {login}
+const getAllUsers = async () => {
+  const response = await axios.get('/api/users')
+  console.log(response.data)
+  return response.data
+}
+const loginService = {login, getAllUsers}
 
 export default loginService
