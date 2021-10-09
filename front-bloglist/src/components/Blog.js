@@ -1,46 +1,56 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
+import { useDispatch } from 'react-redux'
+import { notification } from '../reducers/notificationReducer'
+import { initializeBlogs, likeBlog, removeBlog } from '../reducers/blogReducer'
+import { useParams } from "react-router-dom"
 
-const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
 
-  const [infoVisible, setInfoVisible] = useState(false)
+const Blog = ({ blogs, users, user }) => {
 
-  const hideWhenVisible = { display: infoVisible ? 'none' : '' }
-  const showWhenVisible = { display: infoVisible ? '' : 'none' }
+  const dispatch = useDispatch()
 
-  const toggleVisibility = () => {
-    setInfoVisible(!infoVisible)
+  const id = useParams().id
+  const blog = blogs.find(i => i.id === id)
+  if (!blog) {
+    return null
   }
 
-  if (infoVisible === true) {
-    return (
-      <div style={showWhenVisible} className='blogStyle'>
-        <div>{blog.title} <button onClick={toggleVisibility} id='hide'>hide</button> </div>
-        <div>by {blog.author} </div>
-        <div>likes {blog.likes} <button onClick={() => updateLikes(blog)} id='like'> like </button> </div>
-        <div>url {blog.url} </div>
+  const blogUser = blog.user[0]
 
-        {blog.user[0].username === user.username ?
-          <div><button onClick={() => deleteBlog(blog)} id='remove'>remove</button> </div>
-          : null
-        }
-
-      </div>
-    )
+  const updateLikes = (blog) => {
+    try {
+      dispatch(likeBlog(blog))
+      dispatch(notification(`updated likes of blog ${blog.title} by ${blog.author}`, 5))
+      dispatch(initializeBlogs())
+    } catch (exception) {
+      dispatch(notification('something went wrong, please refresh the page'))
+      console.log(exception)
+    }
   }
+
+  const deleteBlog = async (blog) => {
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+        await dispatch(removeBlog(blog.id))
+        await dispatch(notification(`Removed blog ${blog.title} by ${blog.author}`, 5))
+      }
+    } catch (exception) {
+      await dispatch(notification('something went wrong, please refresh the page'))
+    }
+  }
+
   return (
-    <div style={hideWhenVisible} className='blogStyle'>
-      {blog.title} by {blog.author} <button onClick={toggleVisibility} id='view'>view</button>
+    <div>
+      <h2>{blog.title}</h2>
+      <a href={blog.url}>{blog.url}</a>
+      <div>{blog.likes} likes <button onClick={() => updateLikes(blog)}>like</button> </div>
+      <div>added by {blogUser.name}</div>
+      {blogUser.username === user.username ?
+        <div><button onClick={() => deleteBlog(blog)}>remove</button> </div>
+        : null
+      }
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  updateLikes: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired
-
 }
 
 export default Blog

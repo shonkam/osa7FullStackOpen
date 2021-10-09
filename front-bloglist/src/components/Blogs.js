@@ -1,38 +1,20 @@
 import React, { useRef } from 'react'
 import { notification } from '../reducers/notificationReducer'
-import { createBlog, likeBlog, removeBlog } from '../reducers/blogReducer'
+import { createBlog } from '../reducers/blogReducer'
+
 import { useDispatch, useSelector } from 'react-redux'
-import Blog from './Blog'
+import {
+  BrowserRouter as Router, Switch, Route, Link
+} from "react-router-dom"
 import CreateBlog from './CreateBlog'
 import Togglable from './Togglable'
 
+
 const Blogs = () => {
 
-  const user = useSelector(state => state.user)
-  const blogs = useSelector(state => state.blog)
+  const blogs = useSelector(state => state.blogs)
   const dispatch = useDispatch()
   const blogFormRef = useRef()
-
-  const updateLikes = (blog) => {
-    try {
-      dispatch(likeBlog(blog))
-      dispatch(notification(`updated likes of blog ${blog.title} by ${blog.author}`, 5))
-    } catch (exception) {
-      dispatch(notification('something went wrong, please refresh the page'))
-      console.log(exception)
-    }
-  }
-
-  const deleteBlog = async (blog) => {
-    try {
-      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-        await dispatch(removeBlog(blog.id))
-        await dispatch(notification(`Removed blog ${blog.title} by ${blog.author}`, 5))
-      }
-    } catch (exception) {
-      await dispatch(notification('something went wrong, please refresh the page'))
-    }
-  }
 
   const addNewBlog = (blogObject) => {
 
@@ -51,12 +33,27 @@ const Blogs = () => {
           newBlog={addNewBlog}
         />
       </Togglable>
-      {sortedBlogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
-      )}
+      <ul>
+        {sortedBlogs.map(blog =>
+          <li key={blog.id}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          </li>
+        )}
+      </ul>
     </div>
   )
 
 }
-
+/*
+<ul>
+        name blogs created
+        {users.map(user =>
+          <li key={user.id} >
+            
+            <Link to={`/users/${user.id}`}> {user.name} </Link>
+            {user.blogs.length}
+          </li>
+        )}
+      </ul>
+*/
 export default Blogs

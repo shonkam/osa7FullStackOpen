@@ -4,6 +4,7 @@ import {
   Switch, Route, Link
 } from "react-router-dom"
 import Blogs from './components/Blogs'
+import Blog from './components/Blog'
 import Login from './components/Login'
 import Users from './components/Users'
 import Notification from './components/Notification'
@@ -19,7 +20,8 @@ import User from './components/User'
 const App = () => {
   const user = useSelector(state => state.user)
   const users = useSelector(state => state.users)
-  
+  const blogs = useSelector(state => state.blogs)
+
   if (user) {
     window.localStorage.setItem('user-username', JSON.stringify(user.username))
     window.localStorage.setItem('user-name', JSON.stringify(user.name))
@@ -85,6 +87,9 @@ const App = () => {
       </div>
       <Notification />
       <Switch>
+        <Route path='/blogs/:id'>
+          <Blog blogs={blogs} user={user} users={users} />
+        </Route>
         <Route path='/users/:id'>
           <User users={users} />
         </Route>
