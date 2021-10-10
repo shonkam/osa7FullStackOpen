@@ -8,7 +8,15 @@ import {
 } from "react-router-dom"
 import CreateBlog from './CreateBlog'
 import Togglable from './Togglable'
-
+import {
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+} from '@material-ui/core'
 
 const Blogs = () => {
 
@@ -26,34 +34,40 @@ const Blogs = () => {
   let sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
 
   return (
-    <div>
+    <TableContainer component={Paper}>
       <h2>Blogs</h2>
       <Togglable buttonLabel='createNewBlog' ref={blogFormRef} id="newBlog">
         <CreateBlog
           newBlog={addNewBlog}
         />
       </Togglable>
-      <ul>
-        {sortedBlogs.map(blog =>
-          <li key={blog.id}>
-            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-          </li>
-        )}
-      </ul>
-    </div>
-  )
 
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell align='center'> </TableCell>
+            <TableCell align='center'> </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell align='left' font='bold' >blog name</TableCell>
+            <TableCell align='left' font='bold' >blog author</TableCell>
+          </TableRow>
+          {sortedBlogs.map(blog =>
+            <TableRow key={blog.id} >
+              <TableCell>
+                <Link to={`/blogs/${blog.id}`}>
+                  {blog.title}
+                </Link>
+              </TableCell>
+              <TableCell>
+                {blog.author}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
 }
-/*
-<ul>
-        name blogs created
-        {users.map(user =>
-          <li key={user.id} >
-            
-            <Link to={`/users/${user.id}`}> {user.name} </Link>
-            {user.blogs.length}
-          </li>
-        )}
-      </ul>
-*/
+
 export default Blogs

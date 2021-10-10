@@ -1,23 +1,29 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { login } from '../reducers/userReducer'
 import { notification } from '../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
+import {
+  TextField, Button
+} from '@material-ui/core'
+import { useFormField } from '../hooks'
 
 const Login = () => {
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
+  const username = useFormField('username')
+  const password = useFormField('password')
 
   const dispatch = useDispatch()
 
   const handleLogin = (event) => {
     event.preventDefault()
 
+    const credentials = {
+      username: username.value,
+      password: password.value
+    }
+
     try {
-      dispatch(login({ username, password }))
-      setUsername('')
-      setPassword('')
+      dispatch(login(credentials))
 
     } catch (exception) {
       dispatch(notification('wrong credentials', 5))
@@ -30,28 +36,19 @@ const Login = () => {
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <div>
-          username
-          <input
-            type="text"
-            value={username}
-            id="username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
+          <TextField inputProps={username} label='username' />
         </div>
         <div>
-          password
-          <input
-            type="password"
-            value={password}
-            id="password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
+          <TextField inputProps={password} label='password' type='password' />
         </div>
-        <button type="submit" id="submit">login</button>
+        <div>
+          <Button variant='text' color='primary' type='submit' >
+            login
+          </Button>
+        </div>
       </form>
     </div>
   )
-
 }
 
 export default Login

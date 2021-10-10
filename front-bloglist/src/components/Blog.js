@@ -3,7 +3,17 @@ import { useDispatch } from 'react-redux'
 import { notification } from '../reducers/notificationReducer'
 import { initializeBlogs, likeBlog, removeBlog } from '../reducers/blogReducer'
 import { useParams } from "react-router-dom"
-
+import {
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  Link,
+  Button
+} from '@material-ui/core'
 
 const Blog = ({ blogs, users, user }) => {
 
@@ -41,14 +51,47 @@ const Blog = ({ blogs, users, user }) => {
 
   return (
     <div>
-      <h2>{blog.title}</h2>
-      <a href={blog.url}>{blog.url}</a>
-      <div>{blog.likes} likes <button onClick={() => updateLikes(blog)}>like</button> </div>
-      <div>added by {blogUser.name}</div>
-      {blogUser.username === user.username ?
-        <div><button onClick={() => deleteBlog(blog)}>remove</button> </div>
-        : null
-      }
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                {blog.title}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Link href={blog.url}>
+                  {blog.url}
+                </Link>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                {blog.likes} likes
+                <Button variant='outlined' onClick={() => updateLikes(blog)}>
+                  like
+                </Button>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                added by {blogUser.name}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                {blogUser.username === user.username ?
+                  <Button variant='outlined' onClick={() => deleteBlog(blog)}>
+                    remove
+                  </Button>
+                  : null
+                }
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }

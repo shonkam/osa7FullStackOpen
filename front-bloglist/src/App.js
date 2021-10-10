@@ -8,7 +8,7 @@ import Blog from './components/Blog'
 import Login from './components/Login'
 import Users from './components/Users'
 import Notification from './components/Notification'
-
+import Container from '@material-ui/core/Container'
 import './App.css'
 import { setUser } from './reducers/userReducer'
 import { initializeBlogs } from './reducers/blogReducer'
@@ -65,42 +65,44 @@ const App = () => {
   if (user === null) {
 
     return (
-      <div>
-        <h1>Blog app</h1>
-        <Notification />
-        < Login />
-      </div>
-
+      <Container>
+        <div>
+          <h1>Blog app</h1>
+          <Notification />
+          < Login />
+        </div>
+      </Container>
     )
   }
   return (
-    <Router>
-      <h4>
-        <Link style={padding} to="/">blogs</Link>
-        <Link style={padding} to="/users">users</Link>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-
-      </h4>
-      <div>
-        <h1>Blog app</h1>
-      </div>
-      <Notification />
-      <Switch>
-        <Route path='/blogs/:id'>
-          <Blog blogs={blogs} user={user} users={users} />
-        </Route>
-        <Route path='/users/:id'>
-          <User users={users} />
-        </Route>
-        <Route path='/users'>
-          < Users />
-        </Route>
-        <Route path='/'>
-          < Blogs />
-        </Route>
-      </Switch>
-    </Router>
+    <Container>
+      <Router>
+        <h4>
+          <Link style={padding} to="/">blogs</Link>
+          <Link style={padding} to="/users">users</Link>
+          {user.name} logged in
+          <button onClick={handleLogout}>logout</button>
+        </h4>
+        <div>
+          <h1>Blog app</h1>
+        </div>
+        <Notification />
+        <Switch>
+          <Route path='/blogs/:id'>
+            <Blog blogs={blogs} user={user} users={users} />
+          </Route>
+          <Route path='/users/:id'>
+            <User users={users} />
+          </Route>
+          <Route path='/users'>
+            < Users />
+          </Route>
+          <Route path='/'>
+            < Blogs />
+          </Route>
+        </Switch>
+      </Router>
+    </Container>
   )
 }
 
