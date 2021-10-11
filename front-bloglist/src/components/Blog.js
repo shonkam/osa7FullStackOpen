@@ -2,9 +2,9 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { notification } from '../reducers/notificationReducer'
 import { initializeBlogs, likeBlog, removeBlog } from '../reducers/blogReducer'
-import { useParams } from "react-router-dom"
+import { useParams, useHistory } from "react-router-dom"
+import { getAllUsers } from '../reducers/usersReducer'
 import {
-  Container,
   Table,
   TableBody,
   TableCell,
@@ -15,8 +15,8 @@ import {
   Button
 } from '@material-ui/core'
 
-const Blog = ({ blogs, users, user }) => {
-
+const Blog = ({ blogs, user }) => {
+  const history = useHistory()
   const dispatch = useDispatch()
 
   const id = useParams().id
@@ -27,13 +27,13 @@ const Blog = ({ blogs, users, user }) => {
 
   const blogUser = blog.user[0]
 
-  const updateLikes = (blog) => {
+  const updateLikes = async (blog) => {
     try {
-      dispatch(likeBlog(blog))
-      dispatch(notification(`updated likes of blog ${blog.title} by ${blog.author}`, 5))
-      dispatch(initializeBlogs())
+      await dispatch(likeBlog(blog))
+      await dispatch(initializeBlogs())
+      await dispatch(notification(`updated likes of blog ${blog.title} by ${blog.author}`, 5)) 
     } catch (exception) {
-      dispatch(notification('something went wrong, please refresh the page'))
+      await dispatch(notification('something went wrong, please refresh the page'))
       console.log(exception)
     }
   }
@@ -43,6 +43,9 @@ const Blog = ({ blogs, users, user }) => {
       if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
         await dispatch(removeBlog(blog.id))
         await dispatch(notification(`Removed blog ${blog.title} by ${blog.author}`, 5))
+        await dispatch(getAllUsers())
+        history.push('/')
+
       }
     } catch (exception) {
       await dispatch(notification('something went wrong, please refresh the page'))
@@ -56,7 +59,9 @@ const Blog = ({ blogs, users, user }) => {
           <TableBody>
             <TableRow>
               <TableCell>
-                {blog.title}
+                <h3>
+                  {blog.title}
+                </h3>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -69,7 +74,7 @@ const Blog = ({ blogs, users, user }) => {
             <TableRow>
               <TableCell>
                 {blog.likes} likes
-                <Button variant='outlined' onClick={() => updateLikes(blog)}>
+                <Button variant='outlined' color='primary' onClick={() => updateLikes(blog)}>
                   like
                 </Button>
               </TableCell>
@@ -79,16 +84,16 @@ const Blog = ({ blogs, users, user }) => {
                 added by {blogUser.name}
               </TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>
-                {blogUser.username === user.username ?
-                  <Button variant='outlined' onClick={() => deleteBlog(blog)}>
+            {blogUser.username === user.username ?
+              <TableRow>
+                <TableCell>
+                  <Button variant='outlined' color='secondary' onClick={() => deleteBlog(blog)}>
                     remove
                   </Button>
-                  : null
-                }
-              </TableCell>
-            </TableRow>
+                </TableCell>
+              </TableRow>
+              : null
+            }
           </TableBody>
         </Table>
       </TableContainer>

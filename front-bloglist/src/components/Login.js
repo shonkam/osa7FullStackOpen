@@ -14,7 +14,7 @@ const Login = () => {
 
   const dispatch = useDispatch()
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault()
 
     const credentials = {
@@ -23,7 +23,7 @@ const Login = () => {
     }
 
     try {
-      dispatch(login(credentials))
+      await dispatch(login(credentials))
 
     } catch (exception) {
       dispatch(notification('wrong credentials', 5))
@@ -31,15 +31,25 @@ const Login = () => {
     }
   }
 
+  const usernameTemp = {
+    username: username.value,
+    onChange: username.onChange
+  }
+
+  const passwordTemp = {
+    password: password.value,
+    onChange: password.onChange
+  }
+
   return (
     <div>
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <div>
-          <TextField inputProps={username} label='username' />
+          <TextField inputProps={usernameTemp} label='username' />
         </div>
         <div>
-          <TextField inputProps={password} label='password' type='password' />
+          <TextField inputProps={passwordTemp} label='password' type='password' />
         </div>
         <div>
           <Button variant='text' color='primary' type='submit' >

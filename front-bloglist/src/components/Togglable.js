@@ -1,8 +1,10 @@
 import React, { useState, useImperativeHandle } from 'react'
+import { Button } from '@material-ui/core'
+
 
 const Togglable = React.forwardRef((props, ref) => {
-  const [createBlogVisible, setCreateBlogVisible] = useState(false)
 
+  const [createBlogVisible, setCreateBlogVisible] = useState(false)
   const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
   const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
 
@@ -20,17 +22,14 @@ const Togglable = React.forwardRef((props, ref) => {
     <div>
       <div></div>
       <div style={hideWhenVisible}>
-        <button onClick={() => setCreateBlogVisible(true)}>new blog</button>
+        <Button variant='outlined' color='primary' type='submit' onClick={() =>
+          setCreateBlogVisible(true)}>
+          new blog
+        </Button>
       </div>
       <div style={showWhenVisible}>
         {props.children}
-
-
-        <button onClick={() =>
-          setCreateBlogVisible(false)}>cancel</button>
-
       </div>
-
     </div >
   )
 })

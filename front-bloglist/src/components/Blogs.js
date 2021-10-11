@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { notification } from '../reducers/notificationReducer'
-import { createBlog } from '../reducers/blogReducer'
-
+import { createBlog, initializeBlogs } from '../reducers/blogReducer'
+import { getAllUsers } from '../reducers/usersReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   BrowserRouter as Router, Switch, Route, Link
@@ -9,7 +9,6 @@ import {
 import CreateBlog from './CreateBlog'
 import Togglable from './Togglable'
 import {
-  Container,
   Table,
   TableBody,
   TableCell,
@@ -24,13 +23,24 @@ const Blogs = () => {
   const dispatch = useDispatch()
   const blogFormRef = useRef()
 
-  const addNewBlog = (blogObject) => {
+  const addNewBlog = async (blogObject) => {
 
-    blogFormRef.current.toggleVisibility()
-    dispatch(createBlog(blogObject))
-    dispatch(notification(`a new blog "${blogObject.title}" by ${blogObject.author} added`, 5))
+    try {
+      blogFormRef.current.toggleVisibility()
+      await dispatch(createBlog(blogObject))
+      await dispatch(initializeBlogs())
+      await dispatch(getAllUsers())
+      await dispatch(notification(`a new blog "${blogObject.title}" by ${blogObject.author} added`, 5))
+    } catch (err) {
+      await dispatch(notification('failed to create a new blog', 5))
+      await dispatch(initializeBlogs())
+      console.log(err)
+    }
   }
 
+  const cancel = () => {
+    blogFormRef.current.toggleVisibility()
+  }
   let sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
 
   return (
@@ -38,7 +48,7 @@ const Blogs = () => {
       <h2>Blogs</h2>
       <Togglable buttonLabel='createNewBlog' ref={blogFormRef} id="newBlog">
         <CreateBlog
-          newBlog={addNewBlog}
+          newBlog={addNewBlog} cancel = {cancel}
         />
       </Togglable>
 
@@ -49,8 +59,16 @@ const Blogs = () => {
             <TableCell align='center'> </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell align='left' font='bold' >blog name</TableCell>
-            <TableCell align='left' font='bold' >blog author</TableCell>
+            <TableCell align='left'>
+              <h3>
+                blog name
+              </h3>
+            </TableCell>
+            <TableCell align='left'>
+              <h3>
+                blog author
+              </h3>
+            </TableCell>
           </TableRow>
           {sortedBlogs.map(blog =>
             <TableRow key={blog.id} >

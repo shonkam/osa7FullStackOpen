@@ -8,7 +8,6 @@ import Blog from './components/Blog'
 import Login from './components/Login'
 import Users from './components/Users'
 import Notification from './components/Notification'
-import Container from '@material-ui/core/Container'
 import './App.css'
 import { setUser } from './reducers/userReducer'
 import { initializeBlogs } from './reducers/blogReducer'
@@ -16,6 +15,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import blogServices from './services/blogs'
 import { getAllUsers } from './reducers/usersReducer'
 import User from './components/User'
+import {
+  Container,
+  AppBar,
+  Toolbar,
+  Button
+
+} from '@material-ui/core'
+
 
 const App = () => {
   const user = useSelector(state => state.user)
@@ -51,17 +58,13 @@ const App = () => {
     }
   }, [dispatch])
 
-  const handleLogout = async (event) => {
-    event.preventDefault()
+  const handleLogout = async () => {
     window.localStorage.removeItem('user-username')
     window.localStorage.removeItem('user-name')
     window.localStorage.removeItem('user-token')
     dispatch(setUser(null))
   }
 
-  const padding = {
-    padding: 5
-  }
   if (user === null) {
 
     return (
@@ -77,12 +80,20 @@ const App = () => {
   return (
     <Container>
       <Router>
-        <h4>
-          <Link style={padding} to="/">blogs</Link>
-          <Link style={padding} to="/users">users</Link>
-          {user.name} logged in
-          <button onClick={handleLogout}>logout</button>
-        </h4>
+        <AppBar position="static">
+          <Toolbar>
+            <Button color='inherit' component={Link} to="/">
+              blogs
+            </Button>
+            <Button color='inherit' component={Link} to="/users">
+              users
+            </Button>
+            {user.name} logged in
+            <Button variant='outlined' color='secondary' onClick={() => handleLogout()}>
+              logout
+            </Button>
+          </Toolbar>
+        </AppBar>
         <div>
           <h1>Blog app</h1>
         </div>
@@ -102,7 +113,7 @@ const App = () => {
           </Route>
         </Switch>
       </Router>
-    </Container>
+    </Container >
   )
 }
 

@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router, Switch, Route, Link
 } from "react-router-dom"
 import {
-  Container,
   Table,
   TableBody,
   TableCell,
@@ -20,7 +19,6 @@ const Users = () => {
     return null
   }
   return (
-
     <div>
       <h2>Users</h2>
       <TableContainer component={Paper}>
@@ -28,10 +26,14 @@ const Users = () => {
           <TableBody>
             <TableRow>
               <TableCell>
-                name
+                <h3>
+                  name
+                </h3>
               </TableCell>
               <TableCell>
-                blogs created
+                <h3>
+                  blogs created
+                </h3>
               </TableCell>
             </TableRow>
             {users.map(user =>

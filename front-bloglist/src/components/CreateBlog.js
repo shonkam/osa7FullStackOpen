@@ -1,40 +1,67 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import { useHistory } from "react-router-dom"
+import {
+  TextField, Button
+} from '@material-ui/core'
+import { useFormField } from '../hooks'
 
-const CreateBlog = ({ newBlog }) => {
+const CreateBlog = ({ newBlog, cancel }) => {
 
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-  const [likes, setLikes] = useState('')
+  const history = useHistory()
+  const title = useFormField('title')
+  const author = useFormField('author')
+  const url = useFormField('url')
+  const likes = useFormField('likes')
 
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
-  const handleLikesChange = (event) => {
-    setLikes(event.target.value)
-  }
+  const closeForm = async () => {
+    title.reset()
+    author.reset()
+    url.reset()
+    likes.reset()
+    await cancel()
+    history.push('/users')
+    history.push('/')
 
-  const addBlog = (event) => {
+  }
+  const addBlog = async (event) => {
     event.preventDefault()
-    newBlog({
-      title: title,
-      author: author,
-      url: url,
-      likes: likes
-    })
+    const blogToBeAdded = {
+      title: title.value,
+      author: author.value,
+      url: url.value,
+      likes: likes.value
+    }
+    title.reset()
+    author.reset()
+    url.reset()
+    likes.reset()
 
-    setAuthor('')
-    setTitle('')
-    setUrl('')
-    setLikes('')
+    await newBlog(blogToBeAdded) 
+    history.push('/users')
+    history.push('/')
   }
+
+  const titleTemp = {
+    title: title.value,
+    onChange: title.onChange
+  }
+
+  const authorTemp = {
+    author: author.value,
+    onChange: author.onChange
+  }
+
+  const urlTemp = {
+    url: url.value,
+    onChange: url.onChange
+  }
+
+  const likesTemp = {
+    likes: likes.value,
+    onChange: likes.onChange
+  }
+
 
   return (
     <div>
@@ -42,38 +69,23 @@ const CreateBlog = ({ newBlog }) => {
 
       <form onSubmit={addBlog}>
         <div>
-          title:
-          <input
-            value={title}
-            id='title'
-            onChange={handleTitleChange}
-          />
+          <TextField inputProps={titleTemp} label='title' />
         </div>
         <div>
-          author:
-          <input
-            value={author}
-            id="author"
-            onChange={handleAuthorChange}
-          />
+          <TextField inputProps={authorTemp} label='author' />
         </div>
         <div>
-          url:
-          <input
-            value={url}
-            id="url"
-            onChange={handleUrlChange}
-          />
+          <TextField inputProps={urlTemp} label='url' />
         </div>
         <div>
-          likes:
-          <input
-            value={likes}
-            id="likes"
-            onChange={handleLikesChange}
-          />
+          <TextField inputProps={likesTemp} label='likes' />
         </div>
-        <button type="submit" id="create">create</button>
+        <Button variant='outlined' color='primary' type='submit' >
+          create
+        </Button>
+        <Button variant='outlined' color='secondary' onClick={closeForm}>
+          cancel
+        </Button>
       </form>
     </div >
   )

@@ -2,7 +2,6 @@ import usersService from '../services/users'
 
 const usersReducer = (state = null, action) => {
     switch (action.type) {
-
         case 'ALL_USERS':
             return action.data
 
